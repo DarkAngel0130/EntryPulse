@@ -22,6 +22,7 @@ public class EventService {
     }
 
     public Event getEventById(String id) {
-        return eventRepository.findById(id).orElse(null);
+        
+        return eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
     }
 }

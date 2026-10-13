@@ -1,0 +1,6 @@
+name: EntryPulse
+values:
+  - key: base_url
+    value: 'http://localhost:8080'
+  - key: token
+    secret: true

@@ -1,0 +1,10 @@
+$kind: http-request
+name: Get Events
+examples: .resources/get-events.resources/examples
+order: 2000
+method: GET
+url: "{{base_url}}/api/events"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"

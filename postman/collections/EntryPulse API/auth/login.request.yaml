@@ -1,0 +1,29 @@
+$kind: http-request
+name: Login
+auth:
+  type: noauth
+order: 1000
+method: POST
+url: http://localhost:8080/api/auth/login
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"email\": \"shalom@example.com\",\r
+
+    \    \"password\": \"password123\" \r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: |-
+      const json = pm.response.json();
+      if (json.token) {
+          pm.environment.set("token", json.token);
+          console.log("✅ JWT token saved to environment variable 'token'");
+      } else {
+          console.error("❌ No token found in response:", JSON.stringify(json));
+      }
+    language: text/javascript

@@ -1,0 +1,7 @@
+$kind: collection
+name: EntryPulse API
+description: EntryPulse backend — JWT-secured REST API
+variables:
+  - key: json_web_token_0ei1
+    secret: true
+    disabled: false

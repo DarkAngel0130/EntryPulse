@@ -1,3 +1,4 @@
+
 package org.entrypulse.entrypulse.security;
 
 import io.jsonwebtoken.Claims;
@@ -26,26 +27,61 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain
+    ) throws ServletException, IOException {
 
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
+        // Diagnostic log: confirm whether the request carries a Bearer token.
+        log.info(
+                "Incoming request: method={}, path={}, bearerPresent={}",
+                request.getMethod(),
+                request.getRequestURI(),
+                header != null && header.startsWith("Bearer ")
+        );
+
         if (header != null && header.startsWith("Bearer ")) {
             try {
-                Claims claims = jwtService.parse(header.substring(7));
+                String token = header.substring(7);
+                Claims claims = jwtService.parse(token);
+
                 String userId = claims.getSubject();
                 String role = claims.get("role", String.class);
 
-                var authentication = new UsernamePasswordAuthenticationToken(
-                        userId, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+                // Diagnostic log: confirm that the token was accepted.
+                // Never log the actual token or secret.
+                log.info(
+                        "JWT accepted for path={}, subject={}, role={}",
+                        request.getRequestURI(),
+                        userId,
+                        role
+                );
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }  catch (JwtException | IllegalArgumentException e) {
-                log.warn("JWT rejected: {}", e.getMessage());
+                var authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userId,
+                                null,
+                                List.of(
+                                        new SimpleGrantedAuthority(
+                                                "ROLE_" + role
+                                        )
+                                )
+                        );
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
+
+            } catch (JwtException | IllegalArgumentException e) {
+                log.warn(
+                        "JWT rejected for path={}: {}",
+                        request.getRequestURI(),
+                        e.getMessage()
+                );
+
                 SecurityContextHolder.clearContext();
-                log.debug("Authorization header present: {}", header != null);
             }
         }
 

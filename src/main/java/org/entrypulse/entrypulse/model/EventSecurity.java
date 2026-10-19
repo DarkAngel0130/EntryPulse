@@ -26,4 +26,15 @@ public class EventSecurity {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public enum AssignmentStatus {
+        PENDING,
+        ACCEPTED,
+        DECLINED,
+        REVOKED
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AssignmentStatus status = AssignmentStatus.PENDING;
 }

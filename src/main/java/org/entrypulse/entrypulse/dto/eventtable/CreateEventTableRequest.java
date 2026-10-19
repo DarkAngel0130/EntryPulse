@@ -1,4 +1,4 @@
-package org.entrypulse.entrypulse.dto.event;
+package org.entrypulse.entrypulse.dto.eventtable;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

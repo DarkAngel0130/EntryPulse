@@ -8,7 +8,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+@Table(
+        name = "event_table",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_event_table_event_number",
+                        columnNames = {"event_id", "table_number"}
+                )
+        }
+)
 @Entity
 @Getter
 @Setter

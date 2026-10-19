@@ -8,4 +8,9 @@ import java.util.List;
 
 public interface EventTableRepository extends JpaRepository<EventTable, String> {
     List<EventTable> findByEventEventId(String eventId);
+
+    boolean existsByEventEventIdAndTableNumber(
+            String eventId,
+            int tableNumber
+    );
 }

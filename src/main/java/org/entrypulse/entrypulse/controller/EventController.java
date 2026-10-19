@@ -1,6 +1,7 @@
 
 package org.entrypulse.entrypulse.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.entrypulse.entrypulse.model.Event;
 import org.entrypulse.entrypulse.service.EventService;
 import org.springframework.http.HttpStatus;
@@ -11,15 +12,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
+@RequiredArgsConstructor
 public class EventController {
 
     private final EventService eventService;
 
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
-    }
-
-    // Create a new event
     @PostMapping
     public ResponseEntity<Event> createEvent(
             @RequestBody Event event) {
@@ -31,23 +28,37 @@ public class EventController {
                 .body(createdEvent);
     }
 
-    // Retrieve all events
     @GetMapping
     public ResponseEntity<List<Event>> getAllEvents() {
-
-        List<Event> events = eventService.getAllEvents();
-
-        return ResponseEntity.ok(events);
+        return ResponseEntity.ok(eventService.getAllEvents());
     }
 
-    // Retrieve a single event by ID
     @GetMapping("/{eventId}")
     public ResponseEntity<Event> getEventById(
             @PathVariable String eventId) {
 
-        Event event = eventService.getEventById(eventId);
-
-        return ResponseEntity.ok(event);
+        return ResponseEntity.ok(
+                eventService.getEventById(eventId)
+        );
     }
-}
 
+
+    @PutMapping("/{eventId}")
+    public ResponseEntity<Event> updateEvent(
+            @PathVariable String eventId,
+            @RequestBody Event event) {
+
+        return ResponseEntity.ok(
+                eventService.updateEvent(eventId, event)
+        );
+    }
+
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<Void> deleteEvent(
+            @PathVariable String eventId) {
+
+        eventService.deleteEvent(eventId);
+        return ResponseEntity.noContent().build();
+    }
+
+}

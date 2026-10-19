@@ -1,14 +1,19 @@
 package org.entrypulse.entrypulse.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_event_guest",
+                        columnNames = {"event_id", "guest_id"}
+                )
+        }
+)
 @Entity
 @Getter
 @Setter
@@ -25,7 +30,7 @@ public class EventGuest {
     private Event event;
 
     @ManyToOne
-    @JoinColumn(name = "event_table_id", nullable = false)
+    @JoinColumn(name = "event_table_id")
     private EventTable eventTable;
 
     @ManyToOne

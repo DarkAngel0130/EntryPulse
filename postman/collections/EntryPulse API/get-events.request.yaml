@@ -1,5 +1,8 @@
 $kind: http-request
 name: Get Events
+body:
+  type: json
+  content: ""
 examples: .resources/get-events.resources/examples
 order: 2000
 method: GET

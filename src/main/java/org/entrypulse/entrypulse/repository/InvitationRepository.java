@@ -1,3 +1,4 @@
+
 package org.entrypulse.entrypulse.repository;
 
 import org.entrypulse.entrypulse.model.Invitation;
@@ -5,7 +6,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface InvitationRepository extends JpaRepository<Invitation, String> {
+public interface InvitationRepository
+        extends JpaRepository<Invitation, String> {
 
     Optional<Invitation> findByToken(String token);
+
+    Optional<Invitation> findByIdAndEvent_Organiser_Id(
+            String invitationId,
+            String organiserId
+    );
+
+    boolean existsByEventGuest_EventGuestId(String eventGuestId);
+
+    long countByEvent_EventId(String eventId);
 }

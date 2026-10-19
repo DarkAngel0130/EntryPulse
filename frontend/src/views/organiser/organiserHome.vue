@@ -7,9 +7,6 @@ function logout() { clearSession(); router.push('/login') }
 </script>
 
 <template>
-  <main style="padding: 24px">
-    <h1>Organiser home</h1>
-    <p>Signed in as {{ session.user.name }} ({{ session.user.role }})</p>
-    <button class="btn btn-secondary" @click="logout">Log out</button>
-  </main>
+  <h1 style="margin: 0 0 8px">Dashboard</h1>
+  <p class="muted" style="color: var(--muted)">Attendance statistics will appear here.</p>
 </template>

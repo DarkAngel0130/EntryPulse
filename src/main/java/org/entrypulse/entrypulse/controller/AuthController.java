@@ -32,4 +32,13 @@ public class AuthController {
     ) {
         return ResponseEntity.ok(authService.login(request));
     }
+
+
+    @PostMapping("/register/security")
+    public ResponseEntity<AuthResponse> registerSecurity(
+            @Valid @RequestBody RegisterRequest request
+    ) {
+        return ResponseEntity.ok(authService.registerSecurity(request));
+    }
+
 }

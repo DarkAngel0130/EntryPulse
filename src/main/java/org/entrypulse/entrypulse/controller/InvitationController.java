@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/invitations")
 @RequiredArgsConstructor
@@ -42,4 +44,26 @@ public class InvitationController {
                 invitationId,
                 authentication.getName());
     }
+
+
+    @GetMapping("/event/{eventId}")
+    public List<Invitation> getInvitationsForEvent(
+            @PathVariable String eventId,
+            Authentication authentication) {
+
+        return invitationService.getInvitationsForEvent(
+                eventId,
+                authentication.getName());
+    }
+
+    @PostMapping("/{invitationId}/reinstate")
+    public Invitation reinstateInvitation(
+            @PathVariable String invitationId,
+            Authentication authentication) {
+
+        return invitationService.reinstateInvitation(
+                invitationId,
+                authentication.getName());
+    }
+
 }

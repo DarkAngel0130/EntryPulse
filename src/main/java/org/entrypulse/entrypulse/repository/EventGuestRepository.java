@@ -11,6 +11,11 @@ public interface EventGuestRepository
 
     List<EventGuest> findByEventEventId(String eventId);
 
+    List<EventGuest> findByEvent_EventIdAndGuest_NameContainingIgnoreCase(
+            String eventId,
+            String name
+    );
+
     boolean existsByEvent_EventIdAndGuest_Id(
             String eventId,
             String guestId

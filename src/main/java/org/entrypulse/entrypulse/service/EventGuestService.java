@@ -15,6 +15,7 @@ import org.entrypulse.entrypulse.repository.EventTableRepository;
 import org.entrypulse.entrypulse.repository.GuestRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;

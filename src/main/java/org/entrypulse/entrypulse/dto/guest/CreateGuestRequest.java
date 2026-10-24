@@ -1,4 +1,0 @@
-package org.entrypulse.entrypulse.dto.guest;
-
-public class CreateGuestRequest {
-}

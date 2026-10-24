@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.time.LocalDateTime;
 
 import java.util.List;
 
@@ -122,6 +123,8 @@ public class EventSecurityService {
         }
 
         assignment.setStatus(newStatus);
+        assignment.setRespondedAt(LocalDateTime.now());
+
         return eventSecurityRepository.save(assignment);
     }
 
@@ -170,8 +173,8 @@ public class EventSecurityService {
                     "Only revoked assignments can be reinstated");
         }
 
-        assignment.setStatus(
-                EventSecurity.AssignmentStatus.PENDING);
+        assignment.setStatus(EventSecurity.AssignmentStatus.PENDING);
+        assignment.setRespondedAt(null);
 
         return eventSecurityRepository.save(assignment);
     }
@@ -187,5 +190,16 @@ public class EventSecurityService {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN, "Insufficient permissions");
         }
+    }
+    public EventSecurity assignSecurityByEmail(
+            String eventId, String email, String organiserId) {
+
+        User target = userRepository.findByEmail(email.trim())
+                .filter(u -> u.getRole() == User.Role.SECURITY)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No security account found with that email"));
+
+        return assignSecurityToEvent(eventId, target.getId(), organiserId);
     }
 }

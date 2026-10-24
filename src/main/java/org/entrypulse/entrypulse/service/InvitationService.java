@@ -6,6 +6,7 @@ import org.entrypulse.entrypulse.model.EventGuest;
 import org.entrypulse.entrypulse.model.EventSecurity;
 import org.entrypulse.entrypulse.model.Invitation;
 import org.entrypulse.entrypulse.repository.EventGuestRepository;
+import org.entrypulse.entrypulse.repository.EventRepository;
 import org.entrypulse.entrypulse.repository.InvitationRepository;
 import org.entrypulse.entrypulse.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class InvitationService {
     private final InvitationRepository invitationRepository;
     private final EventGuestRepository eventGuestRepository;
     private final UserRepository userRepository;
+    private final EventRepository eventRepository;
 
     private final SecureRandom secureRandom = new SecureRandom();
 
@@ -133,4 +136,75 @@ public class InvitationService {
 
         return invitation.getToken();
     }
+
+
+    @Transactional(readOnly = true)
+    public List<Invitation> getInvitationsForEvent(
+            String eventId,
+            String organiserId) {
+
+        var organiser = userRepository.findById(organiserId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "User not found"));
+
+        if (organiser.getRole()
+                != org.entrypulse.entrypulse.model.User.Role.ORGANISER) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Only organisers can view invitations");
+        }
+
+        eventRepository.findByEventIdAndOrganiser_Id(
+                eventId, organiserId
+        ).orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Event not found"));
+
+        return invitationRepository
+                .findByEvent_EventIdAndEvent_Organiser_Id(
+                        eventId, organiserId);
+    }
+
+    public Invitation reinstateInvitation(
+            String invitationId,
+            String organiserId) {
+
+        var organiser = userRepository.findById(organiserId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "User not found"));
+
+        if (organiser.getRole()
+                != org.entrypulse.entrypulse.model.User.Role.ORGANISER) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Only organisers can reinstate invitations");
+        }
+
+        Invitation invitation = invitationRepository
+                .findByIdAndEvent_Organiser_Id(
+                        invitationId, organiserId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Invitation not found"));
+
+        if (invitation.getStatus()
+                != Invitation.InvitationStatus.CANCELLED) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Only cancelled invitations can be reinstated");
+        }
+
+        byte[] randomBytes = new byte[32];
+        secureRandom.nextBytes(randomBytes);
+
+        String token = Base64.getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(randomBytes);
+
+        invitation.setToken(token);
+        invitation.setStatus(Invitation.InvitationStatus.ACTIVE);
+
+        return invitationRepository.save(invitation);
+    }
+
+
+
 }

@@ -1,8 +1,10 @@
-
 package org.entrypulse.entrypulse.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.entrypulse.entrypulse.model.EventSecurity;
+import org.entrypulse.entrypulse.dto.security.EventSecurityResponse;
 import org.entrypulse.entrypulse.service.EventSecurityService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,70 +16,57 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventSecurityController {
 
-    private final EventSecurityService eventSecurityService;
+    private final EventSecurityService service;
+
+    public record AssignByEmailRequest(
+            @NotBlank String eventId,
+            @NotBlank @Email String email) {}
 
     @PostMapping("/assign")
-    public EventSecurity assignSecurityToEvent(
-            @RequestParam String eventId,
-            @RequestParam String userId,
-            Authentication authentication) {
+    public EventSecurityResponse assign(
+            @RequestParam String eventId, @RequestParam String userId,
+            Authentication auth) {
+        return EventSecurityResponse.from(
+                service.assignSecurityToEvent(eventId, userId, auth.getName()));
+    }
 
-        return eventSecurityService.assignSecurityToEvent(
-                eventId, userId, authentication.getName());
+    @PostMapping("/assign-by-email")
+    public EventSecurityResponse assignByEmail(
+            @Valid @RequestBody AssignByEmailRequest request, Authentication auth) {
+        return EventSecurityResponse.from(
+                service.assignSecurityByEmail(request.eventId(), request.email(), auth.getName()));
     }
 
     @GetMapping("/event/{eventId}")
-    public List<EventSecurity> getSecurityForEvent(
-            @PathVariable String eventId,
-            Authentication authentication) {
-
-        return eventSecurityService.getSecurityForEvent(
-                eventId, authentication.getName());
+    public List<EventSecurityResponse> forEvent(
+            @PathVariable String eventId, Authentication auth) {
+        return service.getSecurityForEvent(eventId, auth.getName())
+                .stream().map(EventSecurityResponse::from).toList();
     }
 
     @GetMapping("/my-assignments")
-    public List<EventSecurity> getMyAssignments(
-            Authentication authentication) {
-
-        return eventSecurityService.getMyAssignments(
-                authentication.getName());
+    public List<EventSecurityResponse> mine(Authentication auth) {
+        return service.getMyAssignments(auth.getName())
+                .stream().map(EventSecurityResponse::from).toList();
     }
 
     @PostMapping("/{assignmentId}/accept")
-    public EventSecurity acceptAssignment(
-            @PathVariable String assignmentId,
-            Authentication authentication) {
-
-        return eventSecurityService.acceptAssignment(
-                assignmentId, authentication.getName());
+    public EventSecurityResponse accept(@PathVariable String assignmentId, Authentication auth) {
+        return EventSecurityResponse.from(service.acceptAssignment(assignmentId, auth.getName()));
     }
 
     @PostMapping("/{assignmentId}/decline")
-    public EventSecurity declineAssignment(
-            @PathVariable String assignmentId,
-            Authentication authentication) {
-
-        return eventSecurityService.declineAssignment(
-                assignmentId, authentication.getName());
+    public EventSecurityResponse decline(@PathVariable String assignmentId, Authentication auth) {
+        return EventSecurityResponse.from(service.declineAssignment(assignmentId, auth.getName()));
     }
 
     @PostMapping("/{assignmentId}/revoke")
-    public EventSecurity revokeAssignment(
-            @PathVariable String assignmentId,
-            Authentication authentication) {
-
-        return eventSecurityService.revokeAssignment(
-                assignmentId, authentication.getName());
+    public EventSecurityResponse revoke(@PathVariable String assignmentId, Authentication auth) {
+        return EventSecurityResponse.from(service.revokeAssignment(assignmentId, auth.getName()));
     }
-
 
     @PostMapping("/{assignmentId}/reinstate")
-    public EventSecurity reinstateAssignment(
-            @PathVariable String assignmentId,
-            Authentication authentication) {
-
-        return eventSecurityService.reinstateAssignment(
-                assignmentId, authentication.getName());
+    public EventSecurityResponse reinstate(@PathVariable String assignmentId, Authentication auth) {
+        return EventSecurityResponse.from(service.reinstateAssignment(assignmentId, auth.getName()));
     }
-
 }

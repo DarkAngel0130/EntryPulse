@@ -59,4 +59,30 @@ public class AuthService {
                 user.getRole().name()
         );
     }
+
+
+    public AuthResponse registerSecurity(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email is already registered");
+        }
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPhoneNumber(request.getPhoneNumber());
+
+        // Security accounts must be assigned by the backend.
+        user.setRole(User.Role.SECURITY);
+
+        User savedUser = userRepository.save(user);
+
+        return new AuthResponse(
+                jwtService.generateToken(savedUser),
+                savedUser.getId(),
+                savedUser.getName(),
+                savedUser.getRole().name()
+        );
+    }
+
 }

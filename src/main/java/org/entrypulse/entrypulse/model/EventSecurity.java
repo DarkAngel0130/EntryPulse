@@ -1,11 +1,14 @@
-package org.entrypulse.entrypulse.model;
 
+package org.entrypulse.entrypulse.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -14,16 +17,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class EventSecurity {
 
-
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @UuidGenerator
+    @Column(nullable = false, updatable = false)
     private String id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -37,4 +40,20 @@ public class EventSecurity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AssignmentStatus status = AssignmentStatus.PENDING;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime assignedAt;
+
+    private LocalDateTime respondedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (status == null) {
+            status = AssignmentStatus.PENDING;
+        }
+
+        if (assignedAt == null) {
+            assignedAt = LocalDateTime.now();
+        }
+    }
 }

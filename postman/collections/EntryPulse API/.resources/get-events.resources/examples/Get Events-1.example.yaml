@@ -1,0 +1,36 @@
+$kind: http-example
+name: Get Events
+request:
+  url: "{{base_url}}/api/event-guests"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"eventId\": \"c8822e69-38e0-4317-be9b-21b4f3c6eded\",\r
+
+      \  \"guestId\": \"fb2eec27-4ed7-4ea5-bc2f-81faf21f2b3e\",\r
+
+      \  \"eventTableId\": null,\r
+
+      \  \"seatNumber\": null\r
+
+      }"
+response:
+  statusCode: 401
+  statusText: ""
+  headers:
+    x-content-type-options: nosniff
+    x-xss-protection: "0"
+    cache-control: no-cache, no-store, max-age=0, must-revalidate
+    pragma: no-cache
+    expires: "0"
+    x-frame-options: DENY
+    content-length: "0"
+    date: Tue, 13 Oct 2026 17:51:19 GMT
+    keep-alive: timeout=60
+    connection: keep-alive
+  body:
+    type: text
+    content: ""
+order: 2211177514801834

@@ -11,9 +11,9 @@ body:
   type: json
   content: "{\r
 
-    \    \"email\": \"shalom@example.com\",\r
+    \    \"email\": \"testuser@example.com\",\r
 
-    \    \"password\": \"password123\" \r
+    \    \"password\": \"REPLACE_WITH_LOCAL_TEST_PASSWOR" \r
 
     }"
 scripts:

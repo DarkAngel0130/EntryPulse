@@ -1,0 +1,14 @@
+$kind: http-request
+name: http://localhost:8080/api/auth/register
+description: ""
+url: http://localhost:8080/api/auth/register
+method: POST
+body:
+  type: json
+  content: {
+    "name": "Test User",
+    "email": "testuser@example.com",
+    "password": "REPLACE_WITH_LOCAL_TEST_PASSWORD",
+    "phoneNumber": "0000000000"
+  }
+order: 2000

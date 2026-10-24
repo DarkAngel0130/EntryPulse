@@ -1,0 +1,15 @@
+$kind: http-request
+name: "{{base_url}}/api/auth/login"
+description: ""
+url: "{{base_url}}/api/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"email\": \"testuser@example.com\",\r
+
+    \    \"password\": \"REPLACE_WITH_LOCAL_TEST_PASSWOR\"\r
+
+    }"
+order: 3000
